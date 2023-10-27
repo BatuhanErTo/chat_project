@@ -21,14 +21,14 @@ public class TokenService {
         this.jwtDecoder = jwtDecoder;
     }
 
-    public String generateJwt(Authentication authentication){
+    public String generateJwt(Authentication authentication) {
         String scopeOfRoles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
         JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(Instant.now())
-                .claim("role",scopeOfRoles)
+                .claim("role", scopeOfRoles)
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
     }
