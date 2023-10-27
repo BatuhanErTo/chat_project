@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="home.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <title>Chat Application</title>
+</head>
+
+<body>
+    <div id="window" class="center">
+        <div>
+            <p>All chats</p>
+            <ul id="chat-list">
+
+            </ul>
+        </div>
+        <div>
+            <input type="button" value="Create new chat" onclick="createChatRoom()">
+        </div>
+    </div>
+    <div class="center">
+        <p>Filter chat rooms by Nickname</p>
+        <label>Nickname:</label><br>
+        <input id="nickname-info" type="text"><br>
+        <input type="button" value="Filter" onclick="filterChatByNickname()">
+        <ul id="chat-list-filtered-by-nickname">
+        </ul>
+    </div>
+    <div class="center">
+        <input id="button" type="button" value="sign out" onclick="signOut()">
+    </div>
+</body>
+<script>
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+        window.location.replace("http://127.0.0.1:5500/index.html");
+    }
+    const api = axios.create({
+        baseURL: 'http://localhost:8080/v1/'
+    });
+
+    const getChatRoom = async () => {
+        try {
+            const response = await api.get('chats/getAllChats', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            let chatList = document.getElementById('chat-list');
+            displayChatRoomList(chatList, response);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    async function createChatRoom() {
+        const sendPostRequest = async () => {
+            try {
+                const resp = await api.post('chats/createChat', {}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        await sendPostRequest();
+    }
+
+    async function filterChatByNickname() {
+        const getFilteredChatRoom = async () => {
+            try {
+                const nicknameValue = document.getElementById("nickname-info").value;
+                if (nicknameValue) {
+                    const response = await api.get(`users/getChatsByUser/${nicknameValue}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const chatListForFiltered = document.getElementById('chat-list-filtered-by-nickname');
+                    displayChatRoomList(chatListForFiltered, response);
+                } else {
+                    alert("Nickname info cannot be null or blank!");
+                }
+            } catch (err) {
+                alert(err.response.data);
+            }
+        };
+        await getFilteredChatRoom();
+        document.getElementById("nickname-info").value = "";
+    }
+
+    function signOut(){
+        sessionStorage.clear('nickname');
+        sessionStorage.clear('token');
+        window.location.replace("http://127.0.0.1:5500/index.html");
+    }
+
+    function displayChatRoomList(chatList, response) {
+        chatList.innerHTML = '';
+        response.data.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = "Room: " + item.id;
+            li.setAttribute("chat-id", item.id);
+            li.addEventListener("click", function () {
+                const chatId = li.getAttribute("chat-id");
+                const newUrl = "http://127.0.0.1:5500/chat_room.html" + "?chatId=" + chatId;
+                window.location.href = newUrl;
+            });
+            chatList.append(li);
+        })
+    }
+    setInterval(getChatRoom, 3000);
+</script>
+
+</html>

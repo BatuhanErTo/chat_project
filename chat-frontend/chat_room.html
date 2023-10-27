@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="chat_room.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <title>Chat Time</title>
+</head>
+
+<body>
+    <div>
+        <div id="chat-window" class="center">
+
+        </div>
+        <div class="center">
+            <form>
+                <label>Message:</label><br>
+                <input id="message-info" type="text">
+                <input id="send-button" type="submit" value="Send">
+            </form>
+        </div>
+    </div>
+    <div class="center">
+        <input id="previous-button" type="button" value="previous page">
+        <input id="signOut-button" type="button" value="sign out">
+    </div>
+
+    <script src="chat_room.js"></script>
+</body>
+
+</html>

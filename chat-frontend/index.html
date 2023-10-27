@@ -1,0 +1,90 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <title>Register/Login</title>
+</head>
+
+<body>
+    <div class="center">
+        <form>
+            <label>Nickname:</label><br>
+            <input id="nickname-info" type="text"><br>
+            <label>Password:</label><br>
+            <input id="password-info" type="password"><br>
+            <input id="register-button" type="button" value="register" onclick="register()">
+            <input id="login-button" type="button" value="login" onclick="login()">
+        </form>
+    </div>
+</body>
+<script>
+    const api = axios.create({
+        baseURL: 'http://localhost:8080/v1/auth/'
+    });
+    const elements = {
+        nicknameInput: document.getElementById("nickname-info"),
+        passwordInput: document.getElementById("password-info"),
+    }
+
+    async function register() {
+        const sendRegisterRequest = async () => {
+            try {
+                const nicknameValue = elements.nicknameInput.value;
+                const passwordValue = elements.passwordInput.value;
+                if (nicknameValue && passwordValue) {
+                    const requestBody = {
+                        username: nicknameValue,
+                        password: passwordValue
+                    }
+                    const response = await api.post("register", requestBody);
+                    if (response.status == 200) {
+                        alert(nicknameValue + " welcome to chat my dear friend! Please click to login button <3");
+                    }
+                } else {
+                    alert("Nickname and password cannot be null or blank!");
+                }
+            } catch (err) {
+                clearInputs(elements.nicknameInput, elements.passwordInput);
+                alert(err.response.data);
+            }
+        }
+        await sendRegisterRequest();
+    }
+
+    async function login() {
+        const sendLoginRequest = async () => {
+            try {
+                const nicknameValue = elements.nicknameInput.value;
+                const passwordValue = elements.passwordInput.value;
+                if (nicknameValue && passwordValue) {
+                    const requestBody = {
+                        username: nicknameValue,
+                        password: passwordValue
+                    }
+                    const response = await api.post("login", requestBody);
+                    if (response.status == 200) {
+                        sessionStorage.setItem('nickname', response.data.username);
+                        sessionStorage.setItem('token', response.data.token);
+                        const newUrl = "http://127.0.0.1:5500/home.html";
+                        window.location.href = newUrl;
+                    }
+                } else {
+                    alert("Nickname and password cannot be null or blank!");
+                }
+            } catch (err) {
+                clearInputs(elements.nicknameInput, elements.passwordInput);
+                alert("Wrong credentials!");
+            }
+        }
+        await sendLoginRequest();
+    }
+    function clearInputs(nicknameInput, passwordInput) {
+        nicknameInput.value = "";
+        passwordInput.value = "";
+    }
+</script>
+
+</html>

@@ -1,0 +1,10 @@
+#window {
+  overflow-y: scroll; 
+}
+
+.center {
+    border: 5px solid;
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
